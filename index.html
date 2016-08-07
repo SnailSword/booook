@@ -183,6 +183,7 @@
                 display: inline-block;
                 position: relative;
                 vertical-align: -14px;
+                margin: 0 10px;
             }
             .bgContainer .bgCCur{
                 position: absolute;
@@ -194,11 +195,22 @@
                 top:-2px;
                 left:-2px;
             }
+            .article-action-mid{
+                position: fixed;
+                width: 100%;
+                height: 40%;
+                z-index: 10002;
+                top:30%;
+            }
 		</style>
 	</head>
 	<body>
 	    <div id="root" class="container">
-            <div class="top-nav">
+               <div class="article-action">
+                <div class="article-action-mid" id="action-mid">
+                </div>
+            </div>
+            <div class="top-nav" style="display: none">
                 <div class="icon-back"></div>
                 <div class="nav-title">返回书架</div>
             </div>
@@ -279,7 +291,7 @@
 	                <li id="nextButton">下一章</li>
 	            </ul>
 	        </div>
-            <div class="panel" id="fontContainer">
+            <div class="panel" id="fontContainer"  style="display: none">
                 <div class="childMod">
                     <span>字体</span>
                     <button id="large-font" class="fs-button">大</button>
@@ -290,9 +302,15 @@
                     <div class="bgContainer">
                         <div class="bgCCur"></div>
                     </div>
+                    <div class="bgContainer">
+                        <div class="bgCCur"></div>
+                    </div>
+                    <div class="bgContainer">
+                        <div class="bgCCur"></div>
+                    </div>
                 </div>
             </div>
-            <div class="bottom-nav">
+            <div class="bottom-nav" style="display: none">
                 <div class="bn-item">
                     <div class="bn-item-menu">
                         <div class="inner-icon"></div>
@@ -305,7 +323,7 @@
                         <div class="inner-text">字体</div>
                     </div>
                 </div>
-                <div class="bn-item">
+                <div class="bn-item" id="ndSwitch">
                     <div class="bn-item-day">
                         <div class="inner-icon"></div>
                         <div class="inner-text">白天</div>
@@ -326,7 +344,98 @@
 		<script src="js/jquery.jsonp.js"></script>
 
 		<script>
-			
+            (function () {
+                var Util = (function () {
+                    //防止同域名下顶掉别人的ls或者被别人的顶掉
+                    var prefix = 'html5_resder_'
+                    var storageGetter = function (key) {
+                        return localStorage.getItem(prefix + key);
+                    };
+                    var storageSetter = function (key,val) {
+                        return localStorage.setItem(prefix + key,val);
+                    };
+                    return{
+                        storageGetter:storageGetter,
+                        storageSetter:storageSetter
+                    }
+                })();
+                var DOM = {
+                        topDiv : $('.top-nav'),
+                        bottomDIv : $('.bottom-nav'),
+                        ndSwitch : $('ndSwitch'),
+                        fontContainer : $('#fontContainer'),
+                        fIcon : $('.bn-item-font .inner-icon'),
+                        largeFont : $('#large-font'),
+                        smallFont : $('#small-font'),
+                        rootContainer : $('#fictionContainer')
+                }
+                var WIN = $(window);
+                var fontSize = Util.storageGetter('fontSize')||14;
+                fontSize = parseInt(fontSize);
+
+                function main() {
+                    //TODO:  入口函数
+                    eventHanlder();
+                    DOM.rootContainer.css('font-size',fontSize);
+                }
+                
+                function readerModel() {
+                    //TODO: 实现阅读器相关的数据交互
+                }
+
+                function readerBaseFrame() {
+                    //TODO:  渲染基本页面结构
+                }
+                
+                function eventHanlder() {
+                    //TODO: 交互事件绑定
+                    $('#action-mid').click(function () {
+                        if(DOM.topDiv.css('display')==='none'){
+                            DOM.topDiv.show();
+                            DOM.bottomDIv.show();
+                        }
+                        else{
+                            DOM.topDiv.hide();
+                            DOM.bottomDIv.hide();
+                            DOM.fontContainer.hide();
+                            DOM.fIcon.removeClass('ii-focus');
+                        }
+                    });
+                    WIN.scroll(function () {
+                        DOM.topDiv.hide();
+                        DOM.bottomDIv.hide();
+                        DOM.fontContainer.hide();
+                    });
+                    $('.bn-item-font').click(function () {
+                        if(DOM.fontContainer.css('display')==='none'){
+                            DOM.fontContainer.show();
+                            DOM.fIcon.addClass('ii-focus');
+                        }
+                        else{
+                            DOM.fontContainer.hide();
+                            DOM.fIcon.removeClass('ii-focus');
+                        }
+                    });
+                    DOM.largeFont.click(function () {
+                        if(fontSize>20){return;}
+                        fontSize += 1;
+                        DOM.rootContainer.css('font-size',fontSize);
+                        Util.storageSetter('fontSize',fontSize);
+                    });
+                    DOM.smallFont.click(function () {
+                        if(fontSize<12){return;}
+                        fontSize -= 1;
+                        DOM.rootContainer.css('font-size',fontSize);
+                        Util.storageSetter('fontSize',fontSize);
+                    });
+                    DOM.ndSwitch.click(function () {
+                        //TODO: 触发背景切换事件
+                    });
+                }
+
+                main();
+                
+            })()
 		</script>
 	</body>
 </html>
